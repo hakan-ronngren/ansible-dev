@@ -1,0 +1,92 @@
+- name: Prepare the os
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install required os packages
+      apt:
+        name:
+          - build-essential
+          - libssl-dev
+          - libffi-dev
+          - python-dev
+          - python3-venv
+          - docker.io
+        state: present
+
+    - name: Enroll vagrant in the docker group
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
+
+- name: Create an Ansible development environment
+  hosts: all
+  become: no
+  vars:
+    - version_tag: "v2.9.2"
+    - archive_path: "/vagrant/ansible.tar.gz"
+    - clone_path: "{{ ansible_env.HOME}}/ansible"
+  tasks:
+    - name: See if there is already an ansible clone
+      stat:
+        path: "{{ clone_path }}"
+      register: clone_result
+
+    - name: See if we already have an ansible clone archive
+      stat:
+        path: "{{ archive_path }}"
+      register: archive_result
+
+    - name: Ensure ansible clone directory present
+      file:
+        path: "{{ clone_path }}"
+        state: directory
+
+    - name: Unpack ansible clone into the directory
+      unarchive:
+        remote_src: yes
+        src: "{{ archive_path }}"
+        dest: "{{ clone_path }}/.."
+      when: not clone_result.stat.exists and archive_result.stat.exists
+
+    - name: Clone or update ansible from github
+      git:
+        repo: "https://github.com/ansible/ansible.git"
+        dest: "{{ clone_path }}"
+        version: "{{ version_tag }}"
+
+    - name: Create an ansible clone archive unless we already have one
+      archive:
+        path: "{{ clone_path }}"
+        dest: "{{ archive_path }}"
+      when: not archive_result.stat.exists
+
+    - name: Create python virtual environment
+      shell: 'python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt'
+      args:
+        chdir: "{{ clone_path }}"
+
+    - name: Put env-setup source file in place
+      copy:
+        src: env-setup
+        dest: "{{ ansible_env.HOME}}/env-setup"
+
+    - name: Compact prompts
+      lineinfile:
+        path: "{{ ansible_env.HOME}}/.bashrc"
+        regexp: "( *PS1=').*\\\\u@\\\\h.*:(.*)\\\\w(.* ')"
+        line: '\1\2\\W\3'
+        backrefs: yes
+      with_sequence: start=1 end=2
+
+    - name: Create an alias for env-setup
+      lineinfile:
+        path: "{{ ansible_env.HOME}}/.bash_aliases"
+        line: "alias env-setup='. ~/env-setup'"
+        create: yes
+
+    - name: Put .gitconfig file in place
+      copy:
+        src: "{{ playbook_dir }}/.user_gitconfig"
+        dest: "{{ ansible_env.HOME }}/.gitconfig"
