@@ -8,6 +8,7 @@
       - python-dev
       - python3-venv
       - docker.io
+      - tox
     state: present
 
 - name: Enroll vagrant in the docker group
@@ -15,3 +16,30 @@
     name: vagrant
     groups: docker
     append: yes
+
+- name: Download get-pip
+  get_url:
+    url: "https://bootstrap.pypa.io/get-pip.py"
+    dest: "/opt/get-pip.py"
+
+- name: Select Python versions
+  set_fact:
+    python_versions:
+      - "2.6.9"
+      - "2.7.17"
+      - "3.5.9"
+      - "3.6.10"
+      - "3.7.6"
+      - "3.8.1"
+
+- name: Install Python versions
+  include_tasks: python.yaml
+  loop: "{{ python_versions }}"
+  loop_control:
+    loop_var: python_version
+
+- name: Install build script
+  template:
+    src: install-python-versions.sh.j2
+    dest: /opt/install-python-versions.sh
+    mode: '0755'

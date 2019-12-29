@@ -37,6 +37,7 @@
   shell: 'python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt'
   args:
     chdir: "{{ clone_path }}"
+    creates: "{{ clone_path }}/venv"
 
 - name: Put env-setup source file in place
   copy:

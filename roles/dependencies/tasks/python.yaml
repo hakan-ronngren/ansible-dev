@@ -1,0 +1,39 @@
+---
+- name: See if Python {{ python_version }} is already installed
+  stat:
+    path: "/opt/Python-{{ python_version }}/.installed"
+  register: python_installed_marker
+  changed_when: false
+
+- name: Download Python {{ python_version }} source tarball
+  get_url:
+    url: "https://www.python.org/ftp/python/{{ python_version }}/Python-{{ python_version }}.tgz"
+    dest: "/opt/Python-{{ python_version }}.tgz"
+  when: not python_installed_marker.stat.exists
+
+- name: Unpack Python {{ python_version }} source tarball
+  unarchive:
+    src: "/opt/Python-{{ python_version }}.tgz"
+    dest: "/opt"
+    remote_src: yes
+    owner: root
+    group: root
+  when: not python_installed_marker.stat.exists
+
+#- name: Build and install Python {{ python_version }}
+#  shell: "./configure && make && make install"
+#  args:
+#    chdir: "/opt/Python-{{ python_version }}"
+#  when: not python_installed_marker.stat.exists
+#
+#- name: Install pip
+#  command: "./python /opt/get-pip.py"
+#  args:
+#    chdir: "/opt/Python-{{ python_version }}"
+#  when: not python_installed_marker.stat.exists
+#
+#- name: Mark as installed
+#  file:
+#    path: "/opt/Python-{{ python_version }}/.installed"
+#    state: touch
+#  when: not python_installed_marker.stat.exists

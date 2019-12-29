@@ -1,0 +1,11 @@
+#!/bin/bash -ex
+
+for v in {{ python_versions | join(' ') }} ; do
+    echo
+    echo "Build and install Python $v"
+    echo
+    cd /opt/Python-$v
+    ./configure
+    make
+    make install
+done
