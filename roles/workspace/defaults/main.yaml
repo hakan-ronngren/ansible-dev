@@ -1,0 +1,5 @@
+---
+ansible_repo: "https://github.com/ansible/ansible.git"
+checkout_version: devel
+archive_path: "/vagrant/ansible.tar.gz"
+clone_path: "{{ ansible_env.HOME}}/ansible"

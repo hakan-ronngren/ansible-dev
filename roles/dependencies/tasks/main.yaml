@@ -1,0 +1,17 @@
+---
+- name: Install required os packages
+  apt:
+    name:
+      - build-essential
+      - libssl-dev
+      - libffi-dev
+      - python-dev
+      - python3-venv
+      - docker.io
+    state: present
+
+- name: Enroll vagrant in the docker group
+  user:
+    name: vagrant
+    groups: docker
+    append: yes

@@ -18,8 +18,6 @@ end
 
 Vagrant.configure("2") do |config|
     config.vm.box = "bento/ubuntu-18.04"
-    # See if we can use Ubuntu 19.10
-    #config.vm.box = "ubuntu/eoan64"
 
     config.vm.provider "virtualbox" do |vb|
         vb.memory = "2048"
