@@ -24,6 +24,10 @@ ansible_repo: "https://github.com/my-github-name/ansible.git"
 checkout_version: "feature/my_feature_branch"
 ```
 
+There is an idea to install a representative set of Python verions, so that
+all Ansible tests can run locally, but in the meantime you will have to use
+the --docker flag to ansible-test.
+
 ## External links
 
 * [Ansible Developer Guide](https://docs.ansible.com/ansible/latest/dev_guide/index.html)

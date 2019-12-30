@@ -1,3 +1,4 @@
 .vagrant
 .user_gitconfig
 ansible.tar.gz
+*.retry
