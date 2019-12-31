@@ -1,10 +1,67 @@
 ---
-- name: See if there is already an ansible clone
+- name: Install the ansible-test-wrapper script
+  become: yes
+  copy:
+    src: ansible-test-wrapper
+    dest: /usr/local/bin
+    mode: '0755'
+
+- name: Write .emacs
+  copy:
+    dest: "{{ ansible_env.HOME }}/.emacs"
+    content: "{{ dot_emacs_data }}"
+  when: dot_emacs_data is defined
+
+- name: Write .vimrc
+  copy:
+    dest: "{{ ansible_env.HOME }}/.vimrc"
+    content: "{{ dot_vimrc_data }}"
+  when: dot_vimrc_data is defined
+
+- name: Write .ssh/id_rsa
+  copy:
+    dest: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+    content: "{{ id_rsa_data }}"
+    mode: '0400'
+  when: id_rsa_data is defined
+
+- name: Enable storage of git credentials
+  git_config:
+    scope: global
+    name: credential.helper
+    value: store
+
+- name: Configure git user.name
+  git_config:
+    scope: global
+    name: user.name
+    value: "{{ git.user.name }}"
+  when: git.user.name is defined
+
+- name: Configure git user.email
+  git_config:
+    scope: global
+    name: user.email
+    value: "{{ git.user.email }}"
+  when: git.user.email is defined
+
+- name: Get github.com host key
+  shell: "ssh-keyscan -t rsa github.com"
+  changed_when: false
+  register: host_key_result
+
+- name: Ensure that github.com is a known host
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.ssh/known_hosts"
+    line: "{{ host_key_result.stdout }}"
+    create: yes
+
+- name: See if there is an ansible clone
   stat:
     path: "{{ clone_path }}"
   register: clone_result
 
-- name: See if we already have an ansible clone archive
+- name: See if we have an ansible clone archive
   stat:
     path: "{{ archive_path }}"
   register: archive_result
@@ -27,7 +84,7 @@
     dest: "{{ clone_path }}"
     version: "{{ checkout_version }}"
 
-- name: Create an ansible clone archive unless we already have one
+- name: Create an ansible clone archive unless we have one
   archive:
     path: "{{ clone_path }}"
     dest: "{{ archive_path }}"
@@ -57,8 +114,3 @@
     path: "{{ ansible_env.HOME}}/.bash_aliases"
     line: "alias env-setup='. ~/env-setup'"
     create: yes
-
-- name: Put .gitconfig file in place
-  copy:
-    src: "{{ playbook_dir }}/.user_gitconfig"
-    dest: "{{ ansible_env.HOME }}/.gitconfig"

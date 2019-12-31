@@ -10,11 +10,24 @@
 
 require 'fileutils'
 
-# If we have a .gitconfig, we want it in the vm as well
-USER_GITCONFIG = File.join(ENV['HOME'], '.gitconfig')
-if File.exist?(USER_GITCONFIG)
-    FileUtils.cp(USER_GITCONFIG, './.user_gitconfig')
+$ansible_extra_vars = {git: {user: {}}}
+
+['email', 'name'].each do |key|
+    str = `git config user.#{key}`.chomp
+    if $?.exitstatus == 0
+        $ansible_extra_vars[:git][:user][key.to_sym] = str
+    end
 end
+
+def read_file_into_extra_var(var, path)
+    if File.exist?(path)
+        $ansible_extra_vars[var.to_sym] = File.read(path)
+    end
+end
+
+read_file_into_extra_var(:dot_vimrc_data, File.join(ENV['HOME'], '.vimrc'))
+read_file_into_extra_var(:dot_emacs_data, File.join(ENV['HOME'], '.emacs'))
+read_file_into_extra_var(:id_rsa_data, File.join(ENV['HOME'], '.ssh', 'id_rsa'))
 
 Vagrant.configure("2") do |config|
     config.vm.box = "bento/ubuntu-18.04"
@@ -25,5 +38,6 @@ Vagrant.configure("2") do |config|
 
     config.vm.provision "ansible" do |ansible|
         ansible.playbook = 'playbook.yaml'
+        ansible.extra_vars = $ansible_extra_vars
     end
 end

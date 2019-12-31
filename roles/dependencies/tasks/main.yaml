@@ -3,11 +3,12 @@
   apt:
     name:
       - build-essential
-      - libssl-dev
+      - docker.io
+      - emacs
       - libffi-dev
+      - libssl-dev
       - python-dev
       - python3-venv
-      - docker.io
     state: present
 
 - name: Enroll vagrant in the docker group
