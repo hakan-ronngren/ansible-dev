@@ -8,15 +8,15 @@ shift
 
 case $command in
     units)
-        ansible-test units --docker --color yes "$@" 2> /dev/null | \
+        ansible-test units --docker --color yes "$@" | \
             sed -ne '/Unit test with/,$p'
         ;;
     sanity)
-        ansible-test sanity --docker --color yes "$@" 2> /dev/null | \
+        ansible-test sanity --docker --color yes "$@" | \
             sed -ne '/Running sanity test/,$p' | \
             grep -v '^Requirement already satisfied:'
         ;;
     *)
-        ansible-test $command --docker --color yes "$@" 2> /dev/null
+        ansible-test $command --docker --color yes "$@"
         ;;
 esac
