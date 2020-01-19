@@ -25,8 +25,6 @@ def read_file_into_extra_var(var, path)
     end
 end
 
-read_file_into_extra_var(:dot_vimrc_data, File.join(ENV['HOME'], '.vimrc'))
-read_file_into_extra_var(:dot_emacs_data, File.join(ENV['HOME'], '.emacs'))
 read_file_into_extra_var(:id_rsa_data, File.join(ENV['HOME'], '.ssh', 'id_rsa'))
 
 Vagrant.configure("2") do |config|
