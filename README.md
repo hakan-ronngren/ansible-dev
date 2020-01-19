@@ -24,6 +24,28 @@ ansible_repo: "https://github.com/my-github-name/ansible.git"
 checkout_version: "feature/my_feature_branch"
 ```
 
+## Usage
+
+To get started, just start the virtual machine, enter it and source the setup
+script:
+
+```bash
+vagrant up
+vagrant ssh
+. env-setup
+cd ansible
+```
+
+The ansible-test command is aliased, and uses a wrapper to customize the behavior
+a bit. You use it in the normal way, but you will get the --docker flag, and as
+a bonus it attempts tro suppress lots of debug printouts.
+
+```bash
+ansible-test sanity my-module
+ansible-test units --requirements my-module
+ansible-test units --requirements --python 2.7 my-module
+```
+
 There is an idea to install a representative set of Python verions, so that
 all Ansible tests can run locally, but in the meantime you will have to use
 the --docker flag to ansible-test.
