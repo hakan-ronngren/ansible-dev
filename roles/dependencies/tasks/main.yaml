@@ -1,6 +1,7 @@
 ---
 - name: Install required os packages
   apt:
+    update_cache: yes
     name:
       - build-essential
       - docker.io

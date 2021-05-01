@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This is just a way of running ansible-tests without having to see the massive
-# setup log that precedes the actual test output.
+# amount of debug logging it produces. Printouts to stderr will still show.
 
 command=$1
 shift
@@ -10,15 +10,15 @@ ANSIBLE_TEST=/home/vagrant/ansible/bin/ansible-test
 
 case $command in
     units)
-        $ANSIBLE_TEST units --docker --color=yes "$@" | \
+        $ANSIBLE_TEST units "$@" --color=yes | \
             sed -ne '/Unit test with/,$p'
         ;;
     sanity)
-        $ANSIBLE_TEST sanity --docker --color=yes "$@" | \
+        $ANSIBLE_TEST sanity "$@" --color=yes | \
             sed -ne '/Running sanity test/,$p' | \
             grep -v '^Requirement already satisfied:'
         ;;
     *)
-        $ANSIBLE_TEST $command --docker --color=yes "$@"
+        $ANSIBLE_TEST $command "$@" --color=yes
         ;;
 esac

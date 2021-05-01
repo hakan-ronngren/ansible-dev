@@ -28,7 +28,7 @@ end
 read_file_into_extra_var(:id_rsa_data, File.join(ENV['HOME'], '.ssh', 'id_rsa'))
 
 Vagrant.configure("2") do |config|
-    config.vm.box = "bento/ubuntu-18.04"
+    config.vm.box = "bento/ubuntu-21.04"
 
     config.vm.provider "virtualbox" do |vb|
         vb.memory = "2048"

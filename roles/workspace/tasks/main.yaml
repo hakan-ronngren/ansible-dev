@@ -45,12 +45,12 @@
     value: "{{ git.user.email }}"
   when: git.user.email is defined
 
-- name: Get github.com host key
+- name: Get github.com ssh host key
   shell: "ssh-keyscan -t rsa github.com"
   changed_when: false
   register: host_key_result
 
-- name: Ensure that github.com is a known host
+- name: Ensure that github.com is a known host to ssh
   lineinfile:
     path: "{{ ansible_env.HOME }}/.ssh/known_hosts"
     line: "{{ host_key_result.stdout }}"
@@ -99,7 +99,7 @@
 - name: Put env-setup source file in place
   copy:
     src: env-setup
-    dest: "{{ ansible_env.HOME}}/env-setup"
+    dest: "{{ ansible_env.HOME }}/env-setup"
 
 - name: Compact prompts
   lineinfile:

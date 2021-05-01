@@ -15,8 +15,9 @@ env-setup scripts create symbolic links, which is a disallowed operation
 in the /vagrant mount. Instead, you will get a clone in /home/vagrant.
 You will want to add your fork as a remote, or simply change "origin".
 
-You will probably want to create a group\_vars/all.yaml file, e.g. to point out
-your own GitHub repository. Example:
+## Usage
+
+Create a group\_vars/all.yaml file to customise your environment. Example:
 
 ```yaml
 ---
@@ -24,10 +25,7 @@ ansible_repo: "https://github.com/my-github-name/ansible.git"
 checkout_version: "feature/my_feature_branch"
 ```
 
-## Usage
-
-To get started, just start the virtual machine, enter it and source the setup
-script:
+Then just start the virtual machine, enter it and source the setup script:
 
 ```bash
 vagrant up
@@ -36,19 +34,21 @@ vagrant ssh
 cd ansible
 ```
 
-The ansible-test command is aliased, and uses a wrapper to customize the behavior
-a bit. You use it in the normal way, but you will get the --docker flag, and as
-a bonus it attempts tro suppress lots of debug printouts.
+It takes a while to pull all docker images required to test your module will
+every supported Python version. You may want to do this and take a (long)
+break. Unless you already have a module of your own, just pick any built-in
+module, such as `copy`.
 
 ```bash
-ansible-test sanity my-module
-ansible-test units --requirements my-module
-ansible-test units --requirements --python 2.7 my-module
+ansible-test units --docker --color=yes --requirements <MODULE_NAME>
 ```
 
-There is an idea to install a representative set of Python verions, so that
+See the [dev guide](https://docs.ansible.com/ansible/latest/dev_guide/testing.html)
+for more info on how to test Ansible.
+
+(There is an idea to install a representative set of Python verions, so that
 all Ansible tests can run locally, but in the meantime you will have to use
-the --docker flag to ansible-test.
+the --docker flag to ansible-test.)
 
 ## External links
 

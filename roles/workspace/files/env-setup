@@ -2,9 +2,6 @@
 . ~/ansible/venv/bin/activate
 . ~/ansible/hacking/env-setup
 
-# Customize ansible-test
-alias ansible-test='ansible-test-wrapper'
-
 # Without this, Python will fail to read some of its source files
 LC_ALL=en_US.utf-8
 export LC_ALL
